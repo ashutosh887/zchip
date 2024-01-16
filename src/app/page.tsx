@@ -17,6 +17,7 @@ export default function Home() {
           width={80}
           alt="Zepto"
           className="m-2"
+          priority
         />
 
         <h1 className="text-3xl font-medium text-white m-1 select-none">
