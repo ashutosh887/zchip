@@ -11,6 +11,9 @@ function UserChipSelect({ userData }: Props) {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isListVisible, setIsListVisible] = useState<boolean>(false);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
+    null
+  );
   const listRef = useRef<HTMLUListElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
 
@@ -21,6 +24,7 @@ function UserChipSelect({ userData }: Props) {
       setSelectedUsers((prevUsers) => [...prevUsers, selectedUser]);
       setSearchQuery("");
       setIsListVisible(false);
+      setLastSelectedIndex(null);
     }
   };
 
@@ -33,6 +37,7 @@ function UserChipSelect({ userData }: Props) {
       );
       setSearchQuery("");
       setIsListVisible(false);
+      setLastSelectedIndex(null);
     }
   };
 
@@ -53,6 +58,20 @@ function UserChipSelect({ userData }: Props) {
   const handleClearInput = () => {
     setSearchQuery("");
     setIsListVisible(false);
+    setLastSelectedIndex(null);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && searchQuery === "") {
+      e.preventDefault();
+
+      if (lastSelectedIndex === null && selectedUsers.length > 0) {
+        setLastSelectedIndex(selectedUsers.length - 1);
+      } else if (lastSelectedIndex !== null) {
+        handleRemoveUser(selectedUsers[lastSelectedIndex].id);
+        setLastSelectedIndex(null);
+      }
+    }
   };
 
   useEffect(() => {
@@ -62,6 +81,7 @@ function UserChipSelect({ userData }: Props) {
         !componentRef.current.contains(event.target as Node)
       ) {
         setIsListVisible(false);
+        setLastSelectedIndex(null);
       }
     };
 
@@ -74,12 +94,12 @@ function UserChipSelect({ userData }: Props) {
 
   return (
     <div className="flex flex-col relative w-80" ref={componentRef}>
-      <label htmlFor="users" className="text-gray-300 my-2">
+      <label htmlFor="users" className="text-gray-300">
         Select users
       </label>
 
       {selectedUsers.length > 0 && (
-        <div className="flex flex-wrap gap-2 w-80">
+        <div className="flex flex-wrap gap-2 w-80 my-1">
           {selectedUsers.map((user) => (
             <UserChip key={user.id} user={user} action={handleRemoveUser} />
           ))}
@@ -93,6 +113,7 @@ function UserChipSelect({ userData }: Props) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onMouseDown={handleInputMouseDown}
+            onKeyDown={handleInputKeyDown}
             className="w-80 mt-2 p-2"
             placeholder="Search users..."
           />
@@ -113,14 +134,15 @@ function UserChipSelect({ userData }: Props) {
             className="flex flex-col items-center w-80 mt-2 p-1 rounded-md z-10 max-h-64 overflow-y-auto absolute bg-white space-y-1"
             onMouseDown={handleListMouseDown}
           >
-            {filteredUsers.map((user) => (
+            {filteredUsers.map((user, index) => (
               <li
                 key={user.id}
-                className="text-black cursor-pointer py-1 transition-all duration-150 border border-white hover:border-blue-300 mx-1 w-full text-center flex justify-start items-center space-x-4 p-1"
+                className={`text-black cursor-pointer py-1 transition-all duration-150 border border-white hover:border-blue-300 mx-1 w-full text-center flex justify-start items-center space-x-4 p-1 ${
+                  index === lastSelectedIndex ? "bg-gray-200" : ""
+                }`}
                 onClick={() => handleUserChange(user.id)}
               >
                 <UserBanner height={30} width={30} user={user} />
-
                 <span>{user.name}</span>
               </li>
             ))}

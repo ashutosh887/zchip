@@ -14,7 +14,7 @@ function Chip({}: Props) {
     <div className="flex flex-col justify-center items-center h-screen">
       <UserChipSelect userData={sampleUsers} />
 
-      <div className="flex justify-center items-center m-2 p-2">
+      <div className="flex justify-center items-center m-1 p-2">
         <Button text="Back to home" onClick={() => router.push("/")} />
       </div>
     </div>
