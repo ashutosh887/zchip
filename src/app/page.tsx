@@ -33,7 +33,11 @@ export default function Home() {
 
       <footer className="text-center text-gray-400 p-4 text-sm">
         Designed and implemented by{" "}
-        <Link href={`https://github.com/${userName}`} target="_blank">
+        <Link
+          className="underline"
+          href={`https://github.com/${userName}`}
+          target="_blank"
+        >
           {userName}
         </Link>
       </footer>
