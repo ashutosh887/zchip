@@ -100,8 +100,13 @@ function UserChipSelect({ userData }: Props) {
 
       {selectedUsers.length > 0 && (
         <div className="flex flex-wrap gap-2 w-80 my-1">
-          {selectedUsers.map((user) => (
-            <UserChip key={user.id} user={user} action={handleRemoveUser} />
+          {selectedUsers.map((user, index) => (
+            <UserChip
+              key={user.id}
+              user={user}
+              action={handleRemoveUser}
+              isDeletable={lastSelectedIndex === index}
+            />
           ))}
         </div>
       )}
