@@ -1,5 +1,7 @@
 "use client";
 import Button from "@/components/Button";
+import UserChipSelect from "@/components/UserChipSelect";
+import { sampleUsers } from "@/config/mock";
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -10,7 +12,7 @@ function Chip({}: Props) {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
-      <h4 className="font-light text-gray-300 select-none">Chip Component</h4>
+      <UserChipSelect userData={sampleUsers} />
 
       <div className="flex justify-center items-center m-2 p-2">
         <Button text="Back to home" onClick={() => router.push("/")} />
