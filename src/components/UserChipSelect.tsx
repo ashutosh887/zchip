@@ -1,5 +1,6 @@
 import { User } from "@/config/types";
-import React, { useState } from "react";
+import Image from "next/image";
+import React, { useState, useRef, useEffect } from "react";
 
 type Props = {
   userData: User[];
@@ -7,17 +8,18 @@ type Props = {
 
 function UserChipSelect({ userData }: Props) {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-  const [availableUsers, setAvailableUsers] = useState<User[]>(userData);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isListVisible, setIsListVisible] = useState<boolean>(false);
+  const listRef = useRef<HTMLUListElement>(null);
+  const componentRef = useRef<HTMLDivElement>(null);
 
-  const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const userId = event.target.value;
-    const selectedUser = availableUsers.find((user) => user.id === userId);
+  const handleUserChange = (userId: string) => {
+    const selectedUser = userData.find((user) => user.id === userId);
 
     if (selectedUser) {
       setSelectedUsers((prevUsers) => [...prevUsers, selectedUser]);
-      setAvailableUsers((prevAvailableUsers) =>
-        prevAvailableUsers.filter((user) => user.id !== userId)
-      );
+      setSearchQuery(""); // Clear search query after selection
+      setIsListVisible(false); // Hide the list after selection
     }
   };
 
@@ -28,20 +30,57 @@ function UserChipSelect({ userData }: Props) {
       setSelectedUsers((prevUsers) =>
         prevUsers.filter((user) => user.id !== userId)
       );
-      setAvailableUsers((prevAvailableUsers) => [
-        ...prevAvailableUsers,
-        removedUser,
-      ]);
+
+      // Add the removed user back to the available users
+      setSearchQuery(""); // Clear search query after removal
+      setIsListVisible(false); // Hide the list after removal
     }
   };
 
+  const filteredUsers = userData.filter(
+    (user) =>
+      !selectedUsers.find((selectedUser) => selectedUser.id === user.id) &&
+      user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleInputMouseDown = () => {
+    setIsListVisible(true); // Show the list when clicking on the input
+  };
+
+  const handleListMouseDown = () => {
+    // Prevent hiding the list when clicking inside it
+    setIsListVisible(true);
+  };
+
+  const handleClearInput = () => {
+    setSearchQuery("");
+    setIsListVisible(false); // Hide the list after clearing input
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        componentRef.current &&
+        !componentRef.current.contains(event.target as Node)
+      ) {
+        setIsListVisible(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col relative w-80" ref={componentRef}>
       <label htmlFor="users" className="text-gray-300 my-2">
         Select users
       </label>
 
-      {selectedUsers && (
+      {selectedUsers.length > 0 && (
         <div className="flex flex-wrap gap-2 w-80">
           {selectedUsers.map((user) => (
             <div
@@ -61,21 +100,57 @@ function UserChipSelect({ userData }: Props) {
         </div>
       )}
 
-      <select
-        className="min-w-60 mt-2 p-2"
-        id="users"
-        value={selectedUsers.map((user) => user.id).join(",")}
-        onChange={handleUserChange}
-      >
-        <option value="" disabled>
-          Select a user
-        </option>
-        {availableUsers.map((user) => (
-          <option value={user.id} className="text-black" key={user.id}>
-            {user.name}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <div className="flex items-center relative">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onMouseDown={handleInputMouseDown}
+            className="w-80 mt-2 p-2"
+            placeholder="Search users..."
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={handleClearInput}
+              className="absolute right-2 top-2 text-gray-500"
+            >
+              &#x2715; {/* Unicode character for 'x' */}
+            </button>
+          )}
+        </div>
+
+        {isListVisible && filteredUsers.length > 0 && (
+          <ul
+            ref={listRef}
+            className="flex flex-col items-center w-80 mt-2 p-1 rounded-md z-10 max-h-64 overflow-y-auto absolute bg-white space-y-1"
+            onMouseDown={handleListMouseDown}
+          >
+            {filteredUsers.map((user) => (
+              <li
+                key={user.id}
+                className="text-black cursor-pointer py-1 transition-all duration-150 border border-white hover:border-blue-300 mx-1 w-full text-center flex justify-start items-center space-x-4 p-1"
+                onClick={() => handleUserChange(user.id)}
+              >
+                <Image
+                  src={user.imageURL || "/zepto.jpeg"}
+                  width={30}
+                  height={30}
+                  alt={user.name}
+                  className="rounded-full"
+                />
+
+                <span>{user.name}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {filteredUsers.length === 0 && searchQuery && (
+        <p className="text-gray-500 mt-2">No users found</p>
+      )}
     </div>
   );
 }
