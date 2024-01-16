@@ -1,6 +1,7 @@
 import { User } from "@/config/types";
 import Image from "next/image";
 import React, { useState, useRef, useEffect } from "react";
+import UserBanner from "./UserBanner";
 
 type Props = {
   userData: User[];
@@ -133,13 +134,7 @@ function UserChipSelect({ userData }: Props) {
                 className="text-black cursor-pointer py-1 transition-all duration-150 border border-white hover:border-blue-300 mx-1 w-full text-center flex justify-start items-center space-x-4 p-1"
                 onClick={() => handleUserChange(user.id)}
               >
-                <Image
-                  src={user.imageURL || "/zepto.jpeg"}
-                  width={30}
-                  height={30}
-                  alt={user.name}
-                  className="rounded-full"
-                />
+                <UserBanner height={30} width={30} user={user} />
 
                 <span>{user.name}</span>
               </li>
