@@ -46,9 +46,9 @@ function UserChipSelect({ userData }: Props) {
           {selectedUsers.map((user) => (
             <div
               key={user.id}
-              className="bg-blue-500 text-white px-3 py-1 rounded-full flex items-center"
+              className="bg-gray-700 text-white px-3 py-1 rounded-full flex items-center"
             >
-              <span className="mr-2">{user.name}</span>
+              <span className="mr-2 text-xs font-extralight">{user.name}</span>
               <button
                 type="button"
                 onClick={() => handleRemoveUser(user.id)}
@@ -62,7 +62,7 @@ function UserChipSelect({ userData }: Props) {
       )}
 
       <select
-        className="min-w-60 mt-2"
+        className="min-w-60 mt-2 p-2"
         id="users"
         value={selectedUsers.map((user) => user.id).join(",")}
         onChange={handleUserChange}
