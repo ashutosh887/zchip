@@ -1,7 +1,8 @@
+import { appDescription, appName } from "@/config/constants";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Ubuntu } from "next/font/google";
 import "./globals.css";
-import { appDescription, appName } from "@/config/constants";
 
 const ubuntu = Ubuntu({
   weight: ["300", "400", "500", "700"],
@@ -20,7 +21,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={ubuntu.className}>{children}</body>
+      <body className={ubuntu.className}>
+        {children}
+        <SpeedInsights />
+      </body>
     </html>
   );
 }
