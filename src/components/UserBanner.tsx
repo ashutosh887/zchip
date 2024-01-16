@@ -8,27 +8,38 @@ type Props = {
   height: number;
   width: number;
   user: User;
+  textSize?: "sm" | undefined;
 };
 
-function UserBanner({ height, width, user }: Props) {
+function UserBanner({ height, width, user, textSize }: Props) {
   const bgColor = getRandomColor();
   const initials = getUserInitials(user.name);
 
+  const containerStyle = {
+    backgroundColor: bgColor,
+    width,
+    height,
+  };
+
+  const textStyle = {
+    fontSize: textSize === "sm" ? "0.75em" : "inherit",
+  };
+
   return (
     <div
-      style={{ backgroundColor: bgColor, width, height }}
+      style={containerStyle}
       className="rounded-full text-white text-center flex items-center justify-center"
     >
       {user.imageURL ? (
         <Image
           src={user.imageURL}
-          width={30}
-          height={30}
+          width={width}
+          height={height}
           alt={user.name}
           className="rounded-full"
         />
       ) : (
-        <span>{initials}</span>
+        <span style={textStyle}>{initials}</span>
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 import { User } from "@/config/types";
-import Image from "next/image";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import UserBanner from "./UserBanner";
+import UserChip from "./UserChip";
 
 type Props = {
   userData: User[];
@@ -19,8 +19,8 @@ function UserChipSelect({ userData }: Props) {
 
     if (selectedUser) {
       setSelectedUsers((prevUsers) => [...prevUsers, selectedUser]);
-      setSearchQuery(""); // Clear search query after selection
-      setIsListVisible(false); // Hide the list after selection
+      setSearchQuery("");
+      setIsListVisible(false);
     }
   };
 
@@ -31,10 +31,8 @@ function UserChipSelect({ userData }: Props) {
       setSelectedUsers((prevUsers) =>
         prevUsers.filter((user) => user.id !== userId)
       );
-
-      // Add the removed user back to the available users
-      setSearchQuery(""); // Clear search query after removal
-      setIsListVisible(false); // Hide the list after removal
+      setSearchQuery("");
+      setIsListVisible(false);
     }
   };
 
@@ -45,17 +43,16 @@ function UserChipSelect({ userData }: Props) {
   );
 
   const handleInputMouseDown = () => {
-    setIsListVisible(true); // Show the list when clicking on the input
+    setIsListVisible(true);
   };
 
   const handleListMouseDown = () => {
-    // Prevent hiding the list when clicking inside it
     setIsListVisible(true);
   };
 
   const handleClearInput = () => {
     setSearchQuery("");
-    setIsListVisible(false); // Hide the list after clearing input
+    setIsListVisible(false);
   };
 
   useEffect(() => {
@@ -84,19 +81,7 @@ function UserChipSelect({ userData }: Props) {
       {selectedUsers.length > 0 && (
         <div className="flex flex-wrap gap-2 w-80">
           {selectedUsers.map((user) => (
-            <div
-              key={user.id}
-              className="bg-gray-700 text-white px-3 py-1 rounded-full flex items-center"
-            >
-              <span className="mr-2 text-xs font-extralight">{user.name}</span>
-              <button
-                type="button"
-                onClick={() => handleRemoveUser(user.id)}
-                className="text-white font-bold focus:outline-none"
-              >
-                x
-              </button>
-            </div>
+            <UserChip key={user.id} user={user} action={handleRemoveUser} />
           ))}
         </div>
       )}
@@ -117,7 +102,7 @@ function UserChipSelect({ userData }: Props) {
               onClick={handleClearInput}
               className="absolute right-2 top-2 text-gray-500"
             >
-              &#x2715; {/* Unicode character for 'x' */}
+              &#x2715;
             </button>
           )}
         </div>
