@@ -37,6 +37,7 @@ function UserBanner({ height, width, user, textSize }: Props) {
           height={height}
           alt={user.name}
           className="rounded-full"
+          priority
         />
       ) : (
         <span style={textStyle}>{initials}</span>
